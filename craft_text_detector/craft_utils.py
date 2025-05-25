@@ -412,7 +412,11 @@ def getDetBoxes(textmap, linkmap, text_threshold, link_threshold, low_text, poly
 
 def adjustResultCoordinates(polys, ratio_w, ratio_h, ratio_net=2):
     if len(polys) > 0:
-        polys = np.array(polys)
+        # Filter out polygons that aren't 2D arrays or lists with expected shape
+        valid_polys = [p for p in polys if isinstance(p, (list, np.ndarray)) and np.array(p).ndim == 2 and len(p) > 0]
+
+        # Then convert
+        polys = np.array(valid_polys, dtype=object)
         for k in range(len(polys)):
             if polys[k] is not None:
                 polys[k] *= (ratio_w * ratio_net, ratio_h * ratio_net)
